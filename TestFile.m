@@ -1,188 +1,57 @@
-%TestFile
-classdef TestFile < matlab.apps.AppBase
+% Clear the workspace and the screen
+sca;
+close all;
+clear;
 
-    %Code for the home page
+% Here we call some default settings for setting up Psychtoolbox
+PsychDefaultSetup(2);
 
-    % Properties that correspond to app components
-    properties (Access = public)
-        UIFigure                matlab.ui.Figure
-        CreatedbyKareenaSandhuSalinaMariMentorandMachaelaCruzLabel  matlab.ui.control.Label
-        ClickthecategoriesbuttontobeginLabel  matlab.ui.control.Label
-        CategoriesButton        matlab.ui.control.Button
-        BrainGameHomePageLabel  matlab.ui.control.Label
-    end
+% Get the screen numbers. This gives us a number for each of the screens
+% attached to our computer.
+screens = Screen('Screens');
 
-    % Component initialization
-    methods (Access = private)
+% To draw we select the maximum of these numbers. So in a situation where we
+% have two screens attached to our monitor we will draw to the external
+% secondary screen.
+screenNumber = max(screens);
 
-        % Create UIFigure and components
-        function createComponents(app)
+% Define black and white (white will be 1 and black 0)
+white = WhiteIndex(screenNumber);
+black = BlackIndex(screenNumber);
 
-            % Create UIFigure and hide until all components are created
-            app.UIFigure = uifigure('Visible', 'off');
-            app.UIFigure.Position = [100 100 640 480];
-            app.UIFigure.Name = 'MATLAB App';
+% Do a simply calculation to calculate the luminance value for grey. This
+% will be half the numerical luminace values for white
+grey = white / 2;
 
-            % Create BrainGameHomePageLabel
-            app.BrainGameHomePageLabel = uilabel(app.UIFigure);
-            app.BrainGameHomePageLabel.FontName = 'Apple Braille';
-            app.BrainGameHomePageLabel.FontSize = 48;
-            app.BrainGameHomePageLabel.Position = [31 388 587 72];
-            app.BrainGameHomePageLabel.Text = 'Brain Game Home Page!';
+% Open an on screen window using PsychImaging and color it grey.
+[window, windowRect] = PsychImaging('OpenWindow', screenNumber, grey);
 
-            % Create CategoriesButton
-            app.CategoriesButton = uibutton(app.UIFigure, 'push');
-            app.CategoriesButton.FontSize = 36;
-            app.CategoriesButton.Position = [229 61 191 55];
-            app.CategoriesButton.Text = 'Categories';
+% Measure the vertical refresh rate of the monitor
+ifi = Screen('GetFlipInterval', window);
 
-            % Create ClickthecategoriesbuttontobeginLabel
-            app.ClickthecategoriesbuttontobeginLabel = uilabel(app.UIFigure);
-            app.ClickthecategoriesbuttontobeginLabel.FontSize = 18;
-            app.ClickthecategoriesbuttontobeginLabel.Position = [168 267 306 24];
-            app.ClickthecategoriesbuttontobeginLabel.Text = 'Click the categories button to begin! ';
+% Retreive the maximum priority number
+topPriorityLevel = MaxPriority(window);
 
-            % Create CreatedbyKareenaSandhuSalinaMariMentorandMachaelaCruzLabel
-            app.CreatedbyKareenaSandhuSalinaMariMentorandMachaelaCruzLabel = uilabel(app.UIFigure);
-            app.CreatedbyKareenaSandhuSalinaMariMentorandMachaelaCruzLabel.Position = [243 10 388 22];
-            app.CreatedbyKareenaSandhuSalinaMariMentorandMachaelaCruzLabel.Text = 'Created by: Kareena Sandhu, Salina-Mari Mentor, and Machaela Cruz ';
+% Length of time and number of frames we will use for each drawing test
+numSecs = 1;
+numFrames = round(numSecs / ifi);
 
-            % Show the figure after all components are created
-            app.UIFigure.Visible = 'on';
-        end
-    end
+% Number of frames to wait when specifying good timing. Note: the use of
+% wait frames is to show a generalisable coding. For example, by using
+% waitframes = 2 one would flip on every other frame. See the PTB
+% documentation for details. In what follows we flip every frame.
+waitframes = 1;
 
-    % App creation and deletion
-    methods (Access = public)
+% First we will demonstrate a poor way in which to get good timing of
+% visually presented stimuli. In this way of presenting we leave much to
+% chance as regards when our stimuli get to the screen, so it is not
+% reccomended that you use this approach.
+for frame = 1:numFrames
 
-        % Construct app
-        function app = BrainGame
+    % Color the screen grey
+    Screen('FillRect', window, [0.5 0.5 0.5]);
 
-            % Create UIFigure and components
-            createComponents(app)
+    % Flip to the screen
+    Screen('Flip', window);
 
-            % Register the app with App Designer
-            registerApp(app, app.UIFigure)
-
-            if nargout == 0
-                clear app
-            end
-        end
-
-        % Code that executes before app deletion
-        function delete(app)
-
-            % Delete UIFigure when app is deleted
-            delete(app.UIFigure)
-        end
-    end
 end
-
-%Code for the categories page
-classdef app2 < matlab.apps.AppBase
-
-    % Properties that correspond to app components
-    properties (Access = public)
-        UIFigure              matlab.ui.Figure
-        Image4                matlab.ui.control.Image
-        Image3                matlab.ui.control.Image
-        Image2                matlab.ui.control.Image
-        Image                 matlab.ui.control.Image
-        ColorsLabel           matlab.ui.control.Label
-        AnimalsLabel          matlab.ui.control.Label
-        TransportationLabel   matlab.ui.control.Label
-        FruitLabel            matlab.ui.control.Label
-        ChooseacategoryLabel  matlab.ui.control.Label
-    end
-
-    % Component initialization
-    methods (Access = private)
-
-        % Create UIFigure and components
-        function createComponents(app)
-
-            % Create UIFigure and hide until all components are created
-            app.UIFigure = uifigure('Visible', 'off');
-            app.UIFigure.Position = [100 100 640 480];
-            app.UIFigure.Name = 'MATLAB App';
-
-            % Create ChooseacategoryLabel
-            app.ChooseacategoryLabel = uilabel(app.UIFigure);
-            app.ChooseacategoryLabel.FontSize = 36;
-            app.ChooseacategoryLabel.Position = [154 424 334 48];
-            app.ChooseacategoryLabel.Text = 'Choose a category! ';
-
-            % Create FruitLabel
-            app.FruitLabel = uilabel(app.UIFigure);
-            app.FruitLabel.FontSize = 24;
-            app.FruitLabel.Position = [66 348 53 32];
-            app.FruitLabel.Text = 'Fruit';
-
-            % Create TransportationLabel
-            app.TransportationLabel = uilabel(app.UIFigure);
-            app.TransportationLabel.FontSize = 24;
-            app.TransportationLabel.Position = [43 135 159 32];
-            app.TransportationLabel.Text = 'Transportation';
-
-            % Create AnimalsLabel
-            app.AnimalsLabel = uilabel(app.UIFigure);
-            app.AnimalsLabel.FontSize = 24;
-            app.AnimalsLabel.Position = [435 348 97 32];
-            app.AnimalsLabel.Text = 'Animals ';
-
-            % Create ColorsLabel
-            app.ColorsLabel = uilabel(app.UIFigure);
-            app.ColorsLabel.FontSize = 24;
-            app.ColorsLabel.Position = [450 135 82 32];
-            app.ColorsLabel.Text = 'Colors ';
-
-            % Create Image
-            app.Image = uiimage(app.UIFigure);
-            app.Image.Position = [43 236 100 100];
-            app.Image.ImageSource = 'Apple Image.png';
-
-            % Create Image2
-            app.Image2 = uiimage(app.UIFigure);
-            app.Image2.Position = [66 24 100 100];
-            app.Image2.ImageSource = 'Car Image.png';
-
-            % Create Image3
-            app.Image3 = uiimage(app.UIFigure);
-            app.Image3.Position = [435 236 100 100];
-            app.Image3.ImageSource = 'Goat Image.png';
-
-            % Create Image4
-            app.Image4 = uiimage(app.UIFigure);
-            app.Image4.Position = [441 36 100 100];
-
-            % Show the figure after all components are created
-            app.UIFigure.Visible = 'on';
-        end
-    end
-
-    % App creation and deletion
-    methods (Access = public)
-
-        % Construct app
-        function app = app2
-
-            % Create UIFigure and components
-            createComponents(app)
-
-            % Register the app with App Designer
-            registerApp(app, app.UIFigure)
-
-            if nargout == 0
-                clear app
-            end
-        end
-
-        % Code that executes before app deletion
-        function delete(app)
-
-            % Delete UIFigure when app is deleted
-            delete(app.UIFigure)
-        end
-    end
-end
-
