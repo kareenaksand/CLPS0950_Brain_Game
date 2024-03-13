@@ -9,4 +9,6 @@ websave(Bluefilename, BlueimageURL);
 BlueimageData = imread(Bluefilename);
 
 imshow(BlueimageData);
-
+!git add .
+!git commit -m "blue image"
+!git push origin main
